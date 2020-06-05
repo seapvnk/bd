@@ -29,6 +29,7 @@ char *readf(char *filename) {
 }
 
 void printr(unsigned char *array, int size, int pointer) {
+	putchar('\n');
 	for (int i = 0; i < size; i++) {
 		printf("%c [%x] %d\n", (i == pointer)? '>':' ', i, array[i]);
 	}
@@ -67,6 +68,7 @@ void initMemory(Memory *mem) {
 
 void expandMemory(Memory *mem) {
 	mem->data = realloc(mem->data, ++mem->length);
+	mem->data[++mem->pointer] = 0;
 }
 
 void freeMemory(Memory *mem) {
@@ -76,15 +78,15 @@ void freeMemory(Memory *mem) {
 /** executing brainf*ck **/
 void execBrainfuck(Program *prog, Memory *mem) {
 	for (int i = 0; i < strlen(prog->code); i++) {
-		/** 
-		printr(mem->data, mem->length, mem->pointer);
-		**/
 		switch (prog->code[i]) {
 			case '+': mem->data[mem->pointer]++; break;
 			case '-': mem->data[mem->pointer]--; break;
+			case '<': (mem->pointer > 0)? mem->pointer-- : 0; break;
+			case '>': (mem->pointer >= mem->length)? mem->pointer++ : expandMemory(mem); break;
 			case '.': putchar(mem->data[mem->pointer]); break;
 		}
 	}
+	printr(mem->data, mem->length, mem->pointer);
 }
 
 
