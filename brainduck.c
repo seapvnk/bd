@@ -3,83 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-/** helper functions **/
-
-char *readf(char *filename) {
-	/** copy the content of a text file to a c-string**/
-	FILE *source = fopen(filename, "r");
-	char *program = malloc(1);
-	int len = 1;
-	char c;
-
-	/** read till the end **/
-	while ((c = fgetc(source)) != EOF) {
-		/** copy program to string */
-		program[len-1] = c;
-		program = realloc(program, ++len);
-			
-	}
-
-	/** end of string **/
-	program = realloc(program, len+1);
-	program[len] = '\0';
-	fclose(source);
-
-	return program;
-}
-
-void printr(unsigned char *array, int size, int pointer) {
-	putchar('\n');
-	for (int i = 0; i < size; i++) {
-		printf("%c [%x] %d\n", (i == pointer)? '>':' ', i, array[i]);
-	}
-}
-
-/** Program **/
-
-typedef struct {
-	char *code;
-	int counter;
-} Program;
-
-void initProgram(Program *prog, char *filename) {
-	prog->code = readf(filename); 
-	prog->counter = 0;
-}
-
-void closeProgram(Program *prog) {
-	free(prog->code);
-}
-
-/** Memory **/
-
-typedef struct {
-	unsigned char *data;
-	unsigned int pointer;
-	int length;
-} Memory;
-
-void initMemory(Memory *mem) {
-	mem->length = 1;
-	mem->pointer = 0;
-	mem->data = malloc(1);
-	mem->data[0] = 0;
-}
-
-void movePointerLeft(Memory *mem) {
-	if (mem->pointer > 0)
-		mem->pointer--;
-}
-
-void movePointerRight(Memory *mem) {
-	if (++mem->pointer > mem->length)
-		mem->data = realloc(mem->data, ++mem->length);
-	mem->data[mem->pointer] = 0;
-}
-
-void freeMemory(Memory *mem) {
-	free(mem->data);
-}
+#include "bdutil.c"
+#include "bdprogram.c"
+#include "bdmemory.c"
 
 
 /** executing brainf*ck **/
