@@ -6,13 +6,13 @@
 #include "bdutil.c"
 #include "bdprogram.c"
 #include "bdmemory.c"
+#include "bdloops.c"
 
 
 /** executing brainf*ck **/
 void execBrainfuck(Program *prog, Memory *mem) {
-	int *loops = malloc(sizeof(int));
-	loops[0] = 0;
-	int loopsSize = 0;
+	Loops loops;
+	initLoops(&loops);
 
 	for (; prog->counter < strlen(prog->code); prog->counter++) {
 		switch (prog->code[prog->counter]) {
@@ -25,11 +25,15 @@ void execBrainfuck(Program *prog, Memory *mem) {
 			case '<': movePointerLeft(mem); break;
 			case '>': movePointerRight(mem); break;
 
+			/** loops **/
+			case '[': beginOfLoop(&loops, prog->counter); break;
+			case ']': endOfLoop(&loops, mem->data[mem->pointer], &prog->counter); break;
+
 			/** i/o **/
 			case '.': putchar(mem->data[mem->pointer]); break;
 		}
 	}
-	/** printr(mem->data, mem->length, mem->pointer); **/
+	printr(mem->data, mem->length, mem->pointer); 
 }
 
 
