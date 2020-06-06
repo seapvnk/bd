@@ -7,7 +7,7 @@ typedef struct {
 } Memory;
 
 void initMemory(Memory *mem) {
-	mem->length = 1;
+	mem->length = 0;
 	mem->pointer = 0;
 	mem->data = malloc(1);
 	mem->data[0] = 0;
