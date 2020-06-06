@@ -66,27 +66,44 @@ void initMemory(Memory *mem) {
 	mem->data[0] = 0;
 }
 
-void expandMemory(Memory *mem) {
-	mem->data = realloc(mem->data, ++mem->length);
-	mem->data[++mem->pointer] = 0;
+void movePointerLeft(Memory *mem) {
+	if (mem->pointer > 0)
+		mem->pointer--;
+}
+
+void movePointerRight(Memory *mem) {
+	if (++mem->pointer > mem->length)
+		mem->data = realloc(mem->data, ++mem->length);
+	mem->data[mem->pointer] = 0;
 }
 
 void freeMemory(Memory *mem) {
 	free(mem->data);
 }
 
+
 /** executing brainf*ck **/
 void execBrainfuck(Program *prog, Memory *mem) {
-	for (int i = 0; i < strlen(prog->code); i++) {
-		switch (prog->code[i]) {
+	int *loops = malloc(sizeof(int));
+	loops[0] = 0;
+	int loopsSize = 0;
+
+	for (; prog->counter < strlen(prog->code); prog->counter++) {
+		switch (prog->code[prog->counter]) {
+			
+			/** math operations **/
 			case '+': mem->data[mem->pointer]++; break;
 			case '-': mem->data[mem->pointer]--; break;
-			case '<': (mem->pointer > 0)? mem->pointer-- : 0; break;
-			case '>': (mem->pointer >= mem->length)? mem->pointer++ : expandMemory(mem); break;
+			
+			/** move memory pointer **/
+			case '<': movePointerLeft(mem); break;
+			case '>': movePointerRight(mem); break;
+
+			/** i/o **/
 			case '.': putchar(mem->data[mem->pointer]); break;
 		}
 	}
-	printr(mem->data, mem->length, mem->pointer);
+	/** printr(mem->data, mem->length, mem->pointer); **/
 }
 
 
