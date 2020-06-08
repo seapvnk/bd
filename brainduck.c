@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "bdutil.c"
-#include "bdprogram.c"
-#include "bdmemory.c"
 #include "bdloops.c"
 
 /** helper functions **/
@@ -34,30 +31,24 @@ char *readf(char *filename) {
 
 
 /** executing brainf*ck **/
-void execBrainfuck(Program *prog, Memory *mem) {
+void execBrainfuck(char *program) {
 	Loops loops;
 	initLoops(&loops);
 
-	for (; prog->counter < strlen(prog->code); prog->counter++) {
-		switch (prog->code[prog->counter]) {
-			
-			/** math operations **/
-			case '+': mem->data[mem->pointer]++; break;
-			case '-': mem->data[mem->pointer]--; break;
-			
-			/** move memory pointer **/
-			case '<': movePointerLeft(mem); break;
-			case '>': movePointerRight(mem); break;
+	unsigned char mem[30000] = {0};
+	unsigned int ptr = 0;
 
-			/** loops **/
-			case '[': beginOfLoop(&loops, prog->counter); break;
-			case ']': endOfLoop(&loops, mem->data[mem->pointer], &prog->counter); break;
-
-			/** i/o **/
-			case '.': putchar(mem->data[mem->pointer]); break;
+	for (int i = 0; i < strlen(program); i++) {
+		switch (program[i]) {
+			case '+': mem[ptr]++; break;
+			case '-': mem[ptr]--; break;
+			case '<': (ptr)? ptr--: 0; break;
+			case '>': ptr++; break;
+			case '[': beginOfLoop(&loops, i); break;
+			case ']': endOfLoop(&loops, mem[ptr], &i); break;
+			case '.': putchar(mem[ptr]); break;
 		}
 	}
-	printr(mem->data, mem->length, mem->pointer); 
 }
 
 
@@ -66,15 +57,7 @@ int main(int argc, char *argv[]) {
 		puts("\tusage brainduck <filename>");
 		exit(1);
 	}
-	Program prog;
-	initProgram(&prog, argv[1]);
-
-	Memory mem;
-	initMemory(&mem);
-
-	execBrainfuck(&prog, &mem);
-	closeProgram(&prog);
-	freeMemory(&mem);
+	execBrainfuck(readf(argv[1]));
 
 	return 0;
 }
