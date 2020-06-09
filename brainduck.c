@@ -3,25 +3,25 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "bdloops.c"
+#include "bdloops.c" // loop functions
 
-/** helper functions **/
+// helper functions
 char *readf(char *filename) {
-	/** copy the content of a text file to a c-string**/
+	// copy the content of a text file to a c-string
 	FILE *source = fopen(filename, "r");
 	char *program = malloc(1);
 	int len = 1;
 	char c;
 
-	/** read till the end **/
+	// read till the end
 	while ((c = fgetc(source)) != EOF) {
-		/** copy program to string */
+		// copy program to string 
 		program[len-1] = c;
 		program = realloc(program, ++len);
 			
 	}
 
-	/** end of string **/
+	// end of string
 	program = realloc(program, len+1);
 	program[len] = '\0';
 	fclose(source);
@@ -29,11 +29,62 @@ char *readf(char *filename) {
 	return program;
 }
 
+typedef struct {
+	int length;
+	int *breakpoints;
+	bool firstUse;
+} Loops;
 
-/** executing brainf*ck **/
+void initLoops(Loops *lp) {
+	// set only length
+	lp->length = 0;
+	lp->firstUse = true;
+}
+
+int peek(Loops *lp) {
+	if (lp->length == 0) return -1;
+	return lp->breakpoints[lp->length - 1];
+}
+
+void beginOfLoop(Loops *lp, int programCounter) {
+	if (lp->firstUse) {
+		// first time using memory
+		lp->breakpoints = malloc(sizeof(int));
+		lp->breakpoints[lp->length++] = programCounter;
+		lp->firstUse = false;
+	} else {
+		lp->breakpoints = realloc(lp->breakpoints, ++lp->length * sizeof(int));
+		lp->breakpoints[lp->length - 1] = programCounter;
+	}
+}
+
+void endOfLoop(Loops *lp, unsigned char dataCell, int *programCounter) {
+	if (!lp->firstUse && lp->length > 0) {
+		if (!dataCell) {
+			// end the loop
+			lp->breakpoints = realloc(lp->breakpoints, --lp->length * sizeof(int));
+		} else {
+			// set program counter back to the last loop
+			*programCounter = peek(lp);
+		}	
+	}
+	
+}
+
+void closeLoops(Loops *lp) {
+	free(lp->breakpoints);
+	lp->length = 0;
+}
+
+
+// executing brainf*ck 
 void execBrainfuck(char *program) {
 	Loops loops;
 	initLoops(&loops);
+
+	int *lp = malloc(sizeof(int));
+	int lptr = 0;
+	int len = 1;
 
 	unsigned char mem[30000] = {0};
 	unsigned int ptr = 0;
