@@ -80,7 +80,7 @@ void loops_free(Loops *lp) {
 
 
 // executing brainf*ck 
-void execBrainfuck(char *program) {
+void bd_execute(char *program) {
 	Loops loops;
 	loops_init(&loops);
 
@@ -91,14 +91,19 @@ void execBrainfuck(char *program) {
 		switch (program[i]) {
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
-			case '<': (ptr)? ptr--: 0; break;
-			case '>': ptr++; break;
+			case '>': {
+				if (ptr > 30000) ptr++;	
+				break;
+			}
+			case '<': {
+				if (ptr) ptr--;
+				break;	
+			}
 			case '[': loops_push(&loops, i); break;
 			case ']': loops_pop(&loops, mem[ptr], &i); break;
 			case '.': putchar(mem[ptr]); break;
 		}
 	}
-
 	loops_free(&loops);
 }
 
@@ -108,7 +113,7 @@ int main(int argc, char *argv[]) {
 		puts("\tusage brainduck <filename>");
 		exit(1);
 	}
-	execBrainfuck(readf(argv[1]));
+	bd_execute(readf(argv[1]));
 
 	return 0;
 }
