@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "bdloops.c" // loop functions
-
 // helper functions
 char *readf(char *filename) {
 	// copy the content of a text file to a c-string
