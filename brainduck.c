@@ -6,11 +6,11 @@
 // helper functions
 char *readf(char *filename) {
 	// copy the content of a text file to a c-string
+
 	FILE *source = fopen(filename, "r");
 	char *program = malloc(1);
 	int len = 1;
 	char c;
-
 	// read till the end
 	while ((c = fgetc(source)) != EOF) {
 		// copy program to string 
@@ -18,7 +18,6 @@ char *readf(char *filename) {
 		program = realloc(program, ++len);
 			
 	}
-
 	// end of string
 	program = realloc(program, len+1);
 	program[len] = '\0';
@@ -27,50 +26,55 @@ char *readf(char *filename) {
 	return program;
 }
 
+// Loops
+// definition: data structure responsible to take care of loops
 typedef struct {
 	int length;
-	int *breakpoints;
-	bool firstUse;
+	int *positions;
 } Loops;
 
-void initLoops(Loops *lp) {
-	// set only length
+void loops_init(Loops *lp) {
+	// start with length 0
 	lp->length = 0;
-	lp->firstUse = true;
 }
 
-int peek(Loops *lp) {
-	if (lp->length == 0) return -1;
-	return lp->breakpoints[lp->length - 1];
+int loops_last(Loops *lp) {
+	//return the last position
+	if (!lp->length) exit(-1);
+	return lp->positions[lp->length - 1];
 }
 
-void beginOfLoop(Loops *lp, int programCounter) {
-	if (lp->firstUse) {
-		// first time using memory
-		lp->breakpoints = malloc(sizeof(int));
-		lp->breakpoints[lp->length++] = programCounter;
-		lp->firstUse = false;
+void loops_push(Loops *lp, int pc) {
+	// add a new position to loop
+
+	if (!lp->length) {
+		lp->positions = malloc(sizeof(int));
+		lp->positions[lp->length++] = pc;
 	} else {
-		lp->breakpoints = realloc(lp->breakpoints, ++lp->length * sizeof(int));
-		lp->breakpoints[lp->length - 1] = programCounter;
+		lp->length++;
+		lp->positions = realloc(lp->positions, lp->length * sizeof(int));
+		lp->positions[lp->length - 1] = pc;
 	}
 }
 
-void endOfLoop(Loops *lp, unsigned char dataCell, int *programCounter) {
-	if (!lp->firstUse && lp->length > 0) {
-		if (!dataCell) {
-			// end the loop
-			lp->breakpoints = realloc(lp->breakpoints, --lp->length * sizeof(int));
+void loops_pop(Loops *lp, unsigned char cell, int *pc) {
+	// remove the last loop position
+
+	if (lp->length > 0) {
+		// if data provided is 0 then end the loop
+		if (!cell) {
+			lp->length--;
+			lp->positions = realloc(lp->positions, lp->length * sizeof(int));
 		} else {
 			// set program counter back to the last loop
-			*programCounter = peek(lp);
+			*pc = loops_last(lp);
 		}	
 	}
 	
 }
 
-void closeLoops(Loops *lp) {
-	free(lp->breakpoints);
+void loops_free(Loops *lp) {
+	free(lp->positions);
 	lp->length = 0;
 }
 
@@ -78,11 +82,7 @@ void closeLoops(Loops *lp) {
 // executing brainf*ck 
 void execBrainfuck(char *program) {
 	Loops loops;
-	initLoops(&loops);
-
-	int *lp = malloc(sizeof(int));
-	int lptr = 0;
-	int len = 1;
+	loops_init(&loops);
 
 	unsigned char mem[30000] = {0};
 	unsigned int ptr = 0;
@@ -93,11 +93,13 @@ void execBrainfuck(char *program) {
 			case '-': mem[ptr]--; break;
 			case '<': (ptr)? ptr--: 0; break;
 			case '>': ptr++; break;
-			case '[': beginOfLoop(&loops, i); break;
-			case ']': endOfLoop(&loops, mem[ptr], &i); break;
+			case '[': loops_push(&loops, i); break;
+			case ']': loops_pop(&loops, mem[ptr], &i); break;
 			case '.': putchar(mem[ptr]); break;
 		}
 	}
+
+	loops_free(&loops);
 }
 
 
