@@ -102,6 +102,7 @@ void bd_execute(char *program) {
 			case '[': loops_push(&loops, i); break;
 			case ']': loops_pop(&loops, mem[ptr], &i); break;
 			case '.': putchar(mem[ptr]); break;
+			case ',': mem[ptr] = getchar();
 		}
 	}
 	loops_free(&loops);
