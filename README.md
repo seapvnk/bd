@@ -17,7 +17,15 @@ Just GCC compiler is required to build
  `gcc -o brainduck src/brainduck.c` 
  3. Execute with `brainduck <filename>`
 
-
+## Example
+/test.b
+````
+++++++++++[>+++++++>++++++++++>+++>++++<
+<<<-]>++.>+.+++++++..+++.>>++++.<++.<+++
++++++.--------.+++.------.--------.>+.
+````
+./brainduck test.b
+![](https://github.com/seapvnk/brainduck/blob/master/assets/output.png?raw=true)
 
 ## Built With
 
