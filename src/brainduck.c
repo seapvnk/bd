@@ -91,16 +91,10 @@ void bd_execute(char *program) {
 		switch (program[i]) {
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
-			case '>': {
-				if (ptr > 30000) ptr++;	
-				break;
-			}
-			case '<': {
-				if (ptr) ptr--;
-				break;	
-			}
+			case '>': if (ptr > 30000) ptr++;	break;
+			case '<': if (ptr) ptr--; break;
 			case '[': loops_push(&loops, i); break;
-			case ']': loops_pop(&loops, mem[ptr], &i); break;
+      case ']': loops_pop(&loops, mem[ptr], &i); break;
 			case '.': putchar(mem[ptr]); break;
 			case ',': mem[ptr] = getchar();
 		}
