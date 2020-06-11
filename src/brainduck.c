@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define MEM_SIZE 30000
+
 // helper functions
 char *readf(char *filename) {
 	// copy the content of a text file to a c-string
@@ -59,18 +61,15 @@ void loops_push(Loops *lp, int pc) {
 
 void loops_pop(Loops *lp, unsigned char cell, int *pc) {
 	// remove the last loop position
-
-	if (lp->length > 0) {
-		// if data provided is 0 then end the loop
-		if (!cell) {
-			lp->length--;
-			lp->positions = realloc(lp->positions, lp->length * sizeof(int));
-		} else {
-			// set program counter back to the last loop
-			*pc = loops_last(lp);
-		}	
-	}
-	
+  
+	  // if data provided is 0 then end the loop
+	  if (!cell) {
+	  	lp->length--;
+	  	lp->positions = realloc(lp->positions, lp->length * sizeof(int));
+	  } else {
+		  // set program counter back to the last loop
+		  *pc = loops_last(lp);
+	  }	
 }
 
 void loops_free(Loops *lp) {
@@ -84,18 +83,22 @@ void bd_execute(char *program) {
 	Loops loops;
 	loops_init(&loops);
 
-	unsigned char mem[30000] = {0};
+	unsigned char mem[MEM_SIZE] = {0};
 	unsigned int ptr = 0;
 
 	for (int i = 0; i < strlen(program); i++) {
 		switch (program[i]) {
+      // add or sub operation
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
-			case '>': if (ptr > 30000) ptr++;	break;
+      // move pointer
+			case '>': if (ptr < MEM_SIZE) ptr++;	break;
 			case '<': if (ptr) ptr--; break;
+      // flow control
 			case '[': loops_push(&loops, i); break;
       case ']': loops_pop(&loops, mem[ptr], &i); break;
-			case '.': putchar(mem[ptr]); break;
+			// i/o
+      case '.': putchar(mem[ptr]); break;
 			case ',': mem[ptr] = getchar();
 		}
 	}
