@@ -85,6 +85,7 @@ void bd_execute(char *program) {
 
 	unsigned char mem[MEM_SIZE] = {0};
 	unsigned int ptr = 0;
+  int max_ptr = 0;
 
 	for (int i = 0; i < strlen(program); i++) {
 		switch (program[i]) {
@@ -92,7 +93,7 @@ void bd_execute(char *program) {
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
       // move pointer
-			case '>': if (ptr < MEM_SIZE) ptr++;	break;
+			case '>': if (ptr < MEM_SIZE) { ptr++; if (ptr > max_ptr) max_ptr++;} break;
 			case '<': if (ptr) ptr--; break;
       // flow control
 			case '[': loops_push(&loops, i); break;
@@ -103,6 +104,9 @@ void bd_execute(char *program) {
 		}
 	}
 	loops_free(&loops);
+  putchar('\n');
+  for (int i = 0; i <= max_ptr; i++)
+    printf("[%d] %d %s\n", i, mem[i], (i == ptr)? " <-" : " ");
 }
 
 
