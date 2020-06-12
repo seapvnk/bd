@@ -79,7 +79,7 @@ void loops_free(Loops *lp) {
 
 
 // executing brainf*ck 
-void bd_execute(char *program) {
+void bd_execute(char *program, bool debug) {
 	Loops loops;
 	loops_init(&loops);
 
@@ -104,18 +104,24 @@ void bd_execute(char *program) {
 		}
 	}
 	loops_free(&loops);
-  putchar('\n');
-  for (int i = 0; i <= max_ptr; i++)
-    printf("[%d] %d %s\n", i, mem[i], (i == ptr)? " <-" : " ");
+  if (debug) {
+    putchar('\n');
+    for (int i = 0; i <= max_ptr; i++)
+      printf("[%d] %d %s\n", i, mem[i], (i == ptr)? " <-" : " ");
+  }
+
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
+  bool debug = false;
 	if (argc == 1) {
 		puts("\tusage brainduck <filename>");
 		exit(1);
 	}
-	bd_execute(readf(argv[1]));
+  char *prog = readf(argv[1]);
+	bd_execute(prog, debug);
+  free(prog);
 
 	return 0;
 }
