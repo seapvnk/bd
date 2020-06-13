@@ -80,9 +80,11 @@ void loops_free(Loops *lp) {
 
 // executing brainf*ck 
 void bd_execute(char *program, bool debug) {
-	Loops loops;
+	// loops
+  Loops loops;
 	loops_init(&loops);
-
+  
+  // memory
 	unsigned char mem[MEM_SIZE] = {0};
 	unsigned int ptr = 0;
   int max_ptr = 0;
@@ -92,24 +94,27 @@ void bd_execute(char *program, bool debug) {
       // add or sub operation
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
+      
       // move pointer
-			case '>': {
-        if (ptr < MEM_SIZE) { 
-          ptr++; 
-          if (ptr > max_ptr) max_ptr++;
-          break;
-        }  
-      }
+			case '>': { if (ptr < MEM_SIZE) ptr++; break; }
 			case '<': if (ptr) ptr--; break;
+      
       // flow control
 			case '[': loops_push(&loops, i); break;
       case ']': loops_pop(&loops, mem[ptr], &i); break;
+
 			// i/o
       case '.': putchar(mem[ptr]); break;
 			case ',': mem[ptr] = getchar();
 		}
-	}
+    // hightmost pointer
+    if (ptr > max_ptr) max_ptr++;
+	
+  }
+  // free memory for loops
 	loops_free(&loops);
+
+  // debug flag
   if (debug) {
     putchar('\n');
     for (int i = 0; i <= max_ptr; i++)
