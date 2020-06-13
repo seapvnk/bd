@@ -119,7 +119,14 @@ int main(int argc, char **argv) {
 		puts("\tusage brainduck <filename>");
 		exit(1);
 	}
+  if (argc == 3) {
+    if (!strcmp(argv[2], "-d")) {
+      debug = true;
+    }
+  }
+
   char *prog = readf(argv[1]);
+  puts(""); 
 	bd_execute(prog, debug);
   free(prog);
 
