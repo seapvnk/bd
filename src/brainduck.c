@@ -93,7 +93,13 @@ void bd_execute(char *program, bool debug) {
 			case '+': mem[ptr]++; break;
 			case '-': mem[ptr]--; break;
       // move pointer
-			case '>': if (ptr < MEM_SIZE) { ptr++; if (ptr > max_ptr) max_ptr++;} break;
+			case '>': {
+        if (ptr < MEM_SIZE) { 
+          ptr++; 
+          if (ptr > max_ptr) max_ptr++;
+          break;
+        }  
+      }
 			case '<': if (ptr) ptr--; break;
       // flow control
 			case '[': loops_push(&loops, i); break;
@@ -126,7 +132,6 @@ int main(int argc, char **argv) {
   }
 
   char *prog = readf(argv[1]);
-  puts(""); 
 	bd_execute(prog, debug);
   free(prog);
 
