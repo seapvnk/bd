@@ -116,9 +116,9 @@ void bd_execute(char *program, bool debug) {
 
   // debug flag
   if (debug) {
-    putchar('\n');
+    puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
     for (int i = 0; i <= max_ptr; i++)
-      printf("[%d] %d %s\n", i, mem[i], (i == ptr)? " <-" : " ");
+      printf("%7d  %5d  %s\n", i, mem[i], (i == ptr)? "  <-" : " ");
   }
 
 }
