@@ -28,6 +28,12 @@ char *readf(char *filename) {
 	return program;
 }
 
+void meminfo(unsigned char *mem, int len, int ptr) {
+   puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
+   for (int i = 0; i <= len; i++)
+     printf("%7d  %5d  %s\n", i, mem[i], (i == ptr)? "  <-" : " ");
+}
+
 // Loops
 // definition: data structure responsible to take care of loops
 typedef struct {
@@ -114,20 +120,15 @@ void bd_execute(char *program, bool debug) {
   // free memory for loops
 	loops_free(&loops);
 
-  // debug flag
-  if (debug) {
-    puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
-    for (int i = 0; i <= max_ptr; i++)
-      printf("%7d  %5d  %s\n", i, mem[i], (i == ptr)? "  <-" : " ");
-  }
-
+  if (debug) meminfo(mem, max_ptr, ptr);
+  
 }
 
 
 int main(int argc, char **argv) {
   bool debug = false;
 	if (argc == 1) {
-		puts("\tusage brainduck <filename>");
+		puts("\tUsage: ./brainduck <filename> [-d]\n\t-d: show memory info");
 		exit(1);
 	}
   if (argc == 3) {
