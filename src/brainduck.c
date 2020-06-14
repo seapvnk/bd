@@ -7,31 +7,33 @@
 
 // helper functions
 char *readf(char *filename) {
-	// copy the content of a text file to a c-string
+	// copy the content of a file to a string
+  // return 
 
 	FILE *source = fopen(filename, "r");
-	char *program = malloc(1);
+	char c, *string = malloc(1);
 	int len = 1;
-	char c;
-	// read till the end
+
+	// read file
 	while ((c = fgetc(source)) != EOF) {
-		// copy program to string 
-		program[len-1] = c;
-		program = realloc(program, ++len);
-			
+		string[len-1] = c;
+		string = realloc(string, ++len);
 	}
+
 	// end of string
-	program = realloc(program, len+1);
-	program[len] = '\0';
+	string = realloc(string, len+1);
+	string[len] = '\0';
 	fclose(source);
 
-	return program;
+	return string;
 }
 
-void meminfo(unsigned char *mem, int len, int ptr) {
+void meminfo(unsigned char *mem, int length, int ptr) {
    puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
-   for (int i = 0; i <= len; i++)
-     printf("%7d  %5d  %s\n", i, mem[i], (i == ptr)? "  <-" : " ");
+   for (int i = 0; i <= length; i++) {
+     bool is_pointer = i == ptr;
+     printf("%7d  %5d  %s\n", i, mem[i], is_pointer? "  <-" : " ");
+   }
 }
 
 // Loops
@@ -47,8 +49,10 @@ void loops_init(Loops *lp) {
 }
 
 int loops_last(Loops *lp) {
-	//return the last position
-	if (!lp->length) exit(-1);
+	// return the last position
+	if (!lp->length) {
+    exit(-1);
+  }
 	return lp->positions[lp->length - 1];
 }
 
@@ -57,7 +61,8 @@ void loops_push(Loops *lp, int pc) {
 
 	if (!lp->length) {
 		lp->positions = malloc(sizeof(int));
-		lp->positions[lp->length++] = pc;
+		lp->positions[lp->length] = pc;
+    lp->length++;
 	} else {
 		lp->length++;
 		lp->positions = realloc(lp->positions, lp->length * sizeof(int));
@@ -113,15 +118,20 @@ void bd_execute(char *program, bool debug) {
       case '.': putchar(mem[ptr]); break;
 			case ',': mem[ptr] = getchar();
 		}
-    // hightmost pointer
-    if (ptr > max_ptr) max_ptr++;
-	
+   
+    // update righmost position used in memory
+    if (ptr > max_ptr) {
+      max_ptr++;
+    }
+
   }
   // free memory for loops
 	loops_free(&loops);
-
-  if (debug) meminfo(mem, max_ptr, ptr);
   
+  // debug memory usage at final of program
+  if (debug) { 
+    meminfo(mem, max_ptr, ptr);
+  }
 }
 
 
@@ -137,9 +147,9 @@ int main(int argc, char **argv) {
     }
   }
 
-  char *prog = readf(argv[1]);
-	bd_execute(prog, debug);
-  free(prog);
+  char *program = readf(argv[1]);
+	bd_execute(program, debug);
+  free(program);
 
 	return 0;
 }
