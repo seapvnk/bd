@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define MSG_VERSION "brainduck - version 1.0.0"
+#define MSG_HELP "\tUsage: ./brainduck <filename>|flag [-d]\n\t-d: show memory info\n\t-v: show version"
+
 #define MEM_SIZE 30000
 
 // helper functions
@@ -138,9 +141,15 @@ void bd_execute(char *program, bool debug) {
 int main(int argc, char **argv) {
   bool debug = false;
 	if (argc == 1) {
-		puts("\tUsage: ./brainduck <filename> [-d]\n\t-d: show memory info");
-		exit(1);
+    puts(MSG_HELP);
+		exit(0);
 	}
+
+  if (!strcmp(argv[1], "-v")) {
+    puts(MSG_VERSION);
+    exit(0);
+  }
+
   if (argc == 3) {
     if (!strcmp(argv[2], "-d")) {
       debug = true;
