@@ -3,7 +3,10 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MSG_VERSION "brainduck - version 1.0.0"
+
+
+
+#define MSG_VERSION "brainduck - version 1.0.1"
 #define MSG_HELP "\tUsage: ./brainduck <filename>|flag [-d]\n\t-d: show memory info\n\t-v: show version"
 
 #define MEM_SIZE 30000
@@ -31,11 +34,11 @@ char *readf(char *filename) {
 	return string;
 }
 
-void meminfo(unsigned char *mem, int length, int ptr) {
+void memory_info(unsigned char *memory, int rightmost_cell, int pointer) {
    puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
-   for (int i = 0; i <= length; i++) {
-     bool is_pointer = i == ptr;
-     printf("%7d  %5d  %s\n", i, mem[i], is_pointer? "  <-" : " ");
+   for (int i = 0; i <= rightmost_cell; i++) {
+     bool is_pointer = (i == pointer);
+     printf("%7d  %5d  %s\n", i, memory[i], is_pointer? "  <-" : " ");
    }
 }
 
@@ -59,7 +62,7 @@ int loops_last(Loops *lp) {
 	return lp->positions[lp->length - 1];
 }
 
-void loops_push(Loops *lp, int pc) {
+void loops_add(Loops *lp, int pc) {
 	// add a new position to loop
 
 	if (!lp->length) {
@@ -73,7 +76,7 @@ void loops_push(Loops *lp, int pc) {
 	}
 }
 
-void loops_pop(Loops *lp, unsigned char cell, int *pc) {
+void loops_remove(Loops *lp, unsigned char cell, int *pc) {
 	// remove the last loop position
   
 	  // if data provided is 0 then end the loop
@@ -99,32 +102,32 @@ void bd_execute(char *program, bool debug) {
 	loops_init(&loops);
   
   // memory
-	unsigned char mem[MEM_SIZE] = {0};
-	unsigned int ptr = 0;
-  int max_ptr = 0;
+	unsigned char memory[MEM_SIZE] = {0};
+	unsigned int pointer = 0;
+  int rightmost_cell  = 0;
 
 	for (int i = 0; i < strlen(program); i++) {
 		switch (program[i]) {
       // add or sub operation
-			case '+': mem[ptr]++; break;
-			case '-': mem[ptr]--; break;
+			case '+': memory[pointer]++; break;
+			case '-': memory[pointer]--; break;
       
       // move pointer
-			case '>': { if (ptr < MEM_SIZE) ptr++; break; }
-			case '<': if (ptr) ptr--; break;
+			case '>': { if (pointer < MEM_SIZE) pointer++; break; }
+			case '<': if (pointer) pointer--; break;
       
       // flow control
-			case '[': loops_push(&loops, i); break;
-      case ']': loops_pop(&loops, mem[ptr], &i); break;
+			case '[': loops_add(&loops, i); break;
+      case ']': loops_remove(&loops, memory[pointer], &i); break;
 
 			// i/o
-      case '.': putchar(mem[ptr]); break;
-			case ',': mem[ptr] = getchar();
+      case '.': putchar(memory[pointer]); break;
+			case ',': memory[pointer] = getchar();
 		}
    
     // update righmost position used in memory
-    if (ptr > max_ptr) {
-      max_ptr++;
+    if (pointer > rightmost_cell) {
+      rightmost_cell++;
     }
 
   }
@@ -133,32 +136,33 @@ void bd_execute(char *program, bool debug) {
   
   // debug memory usage at final of program
   if (debug) { 
-    meminfo(mem, max_ptr, ptr);
+    memory_info(memory, rightmost_cell, pointer);
   }
 }
 
+void terminate(const char* msg) {
+  puts(msg);
+  exit(0);
+}
 
 int main(int argc, char **argv) {
   bool debug = false;
+  
+  // end program without any brainfuck program input
 	if (argc == 1) {
-    puts(MSG_HELP);
-		exit(0);
-	}
-
-  if (!strcmp(argv[1], "-v")) {
-    puts(MSG_VERSION);
-    exit(0);
-  }
-
-  if (argc == 3) {
-    if (!strcmp(argv[2], "-d")) {
-      debug = true;
+    terminate(MSG_HELP);
+	} else if (argc == 2 && !(strcmp(argv[1], "-v"))) {
+    terminate(MSG_VERSION);
+  } else {
+  // execute brainfuck  
+    if (argc >= 3) {
+      if (!strcmp(argv[2], "-d")) {
+       debug = true;
+      }
     }
+    char *program = readf(argv[1]);
+	  bd_execute(program, debug);
+    free(program);
   }
-
-  char *program = readf(argv[1]);
-	bd_execute(program, debug);
-  free(program);
-
 	return 0;
 }
