@@ -9,9 +9,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "lib/brainduck.c"
 #include "lib/bd_info.c"
-
+#include "lib/brainduck.c"
 
 char *readf(char *filename);
 void terminate(const char* msg);

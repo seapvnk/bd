@@ -65,7 +65,8 @@ void bdl_free(bdl *lp)
 // INTERPRETER
 
 void bd_meminfo(unsigned char *memory, int rightmost_cell, int pointer){
-   puts("\n\n       BRAINDUCK       \nAddress  Value  Pointer");
+   puts(BD_LOGO);
+   puts("Address  Value  Pointer");
    for (int i = 0; i <= rightmost_cell; i++) {
      bool is_pointer = (i == pointer);
      printf("%7d  %5d  %s\n", i, memory[i], is_pointer? "  <-" : " ");
