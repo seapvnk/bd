@@ -8,13 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "lib/brainduck.c"
 
-#define MSG_VERSION "brainduck - version 2.0.2"
+#include "lib/brainduck.c"
+#include "lib/bd_info.c"
+
 
 char *readf(char *filename);
 void terminate(const char* msg);
-void show_help(void);
 
 // executing brainf*ck 
 int main(int argc, char **argv) {
@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
   
   // end program without any brainfuck program input
 	if (argc == 1) {
-    show_help();
+    show_info_msg();
     terminate("");
 	} else if (argc == 2 && 
     (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version"))) {
@@ -41,14 +41,6 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void show_help(void)
-{
-  puts(MSG_VERSION);
-  puts("usage: ./bd file.bd");
-  puts("flags:");
-  puts("\tversion : --version or -v");
-  puts("\tmemory info: -d");
-}
 
 char *readf(char *filename)
 {
