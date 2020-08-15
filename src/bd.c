@@ -11,10 +11,10 @@
 #include "lib/brainduck.c"
 
 #define MSG_VERSION "brainduck - version 2.0.2"
-#define MSG_HELP "\tUsage: ./brainduck <filename>|flag [-d]\n\t-d: show memory info\n\t-v: show version"
 
 char *readf(char *filename);
 void terminate(const char* msg);
+void show_help(void);
 
 // executing brainf*ck 
 int main(int argc, char **argv) {
@@ -22,8 +22,10 @@ int main(int argc, char **argv) {
   
   // end program without any brainfuck program input
 	if (argc == 1) {
-    terminate(MSG_HELP);
-	} else if (argc == 2 && !(strcmp(argv[1], "-v"))) {
+    show_help();
+    terminate("");
+	} else if (argc == 2 && 
+    (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version"))) {
     terminate(MSG_VERSION);
   } else {
   // execute brainfuck  
@@ -37,6 +39,15 @@ int main(int argc, char **argv) {
     free(program);
   }
 	return 0;
+}
+
+void show_help(void)
+{
+  puts(MSG_VERSION);
+  puts("usage: ./bd file.bd");
+  puts("flags:");
+  puts("\tversion : --version or -v");
+  puts("\tmemory info: -d");
 }
 
 char *readf(char *filename)
@@ -62,7 +73,8 @@ char *readf(char *filename)
 
 void terminate(const char* msg)
 {
-  puts(msg);
+  if (strlen(msg))
+    puts(msg);
   exit(0);
 }
 
