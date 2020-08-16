@@ -11,14 +11,14 @@
 
 #include "lib/bd_info.c"
 #include "lib/brainduck.c"
+#include "lib/bd_interpreter.c"
 
 char *readf(char *filename);
 void terminate(const char* msg);
 
-// executing brainf*ck 
 int main(int argc, char **argv) {
+ 
   bool debug = false;
-  
   // end program without any brainfuck program input
 	if (argc == 1) {
     show_info_msg();
