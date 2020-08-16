@@ -65,6 +65,7 @@ void bdl_free(bdl *lp)
 // INTERPRETER
 
 void bd_meminfo(unsigned char *memory, int rightmost_cell, int pointer){
+   putchar('\n');
    puts(BD_LOGO);
    puts("Address  Value  Pointer");
    for (int i = 0; i <= rightmost_cell; i++) {
@@ -81,7 +82,8 @@ void bd_execute(char *program, bool debug){
 	bdl_init(&loops);
   
   // memory
-	unsigned char memory[MEM_SIZE] = {0};
+	unsigned char * memory = malloc(sizeof (char));
+  *memory = 0;
 	unsigned int pointer = 0;
   int rightmost_cell  = 0;
 
@@ -91,9 +93,21 @@ void bd_execute(char *program, bool debug){
 			case '+': memory[pointer]++; break;
 			case '-': memory[pointer]--; break;
       
-      // move pointer
-			case '>': { if (pointer < MEM_SIZE) pointer++; break; }
-			case '<': if (pointer) pointer--; break;
+      // memory operations
+			case '>': {
+        if (pointer+1 > rightmost_cell) {
+          memory = realloc(memory, pointer+1);
+          rightmost_cell++;
+          memory[rightmost_cell] = 0;
+        }
+        pointer++;
+        break; 
+      }
+
+			case '<': {
+        if (pointer) pointer--;
+        break;
+      }
       
       // flow control
 			case '[': bdl_add(&loops, i); break;
@@ -103,11 +117,6 @@ void bd_execute(char *program, bool debug){
       case '.': putchar(memory[pointer]); break;
 			case ',': memory[pointer] = getchar();
 		}
-   
-    // update righmost position used in memory
-    if (pointer > rightmost_cell) {
-      rightmost_cell++;
-    }
 
   }
 
@@ -118,4 +127,6 @@ void bd_execute(char *program, bool debug){
   if (debug) { 
     bd_meminfo(memory, rightmost_cell, pointer);
   }
+
+  free(memory);
 }
