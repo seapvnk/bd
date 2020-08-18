@@ -14,8 +14,8 @@ Just GCC compiler is required to build
 
  1. Clone this repo
  2. Compile the main file with: 
- `gcc -o brainduck src/brainduck.c` 
- 3. Execute with `brainduck <filename>`
+ `make bd` 
+ 3. Execute with `./bd <filename>`
 
 ## Example
 /test.b
@@ -24,7 +24,7 @@ Just GCC compiler is required to build
 <<<-]>++.>+.+++++++..+++.>>++++.<++.<+++
 +++++.--------.+++.------.--------.>+.
 ````
-./brainduck test.b
+./bd test.b
 
 
 ![](https://github.com/seapvnk/brainduck/blob/master/assets/output.png?raw=true)
