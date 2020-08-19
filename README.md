@@ -1,6 +1,6 @@
 
-# brainduck :^)
-A polite brainfuck interpreter.
+# bd
+A Brainf:duck:ck interpreter.
 
 ## Getting Started
 
@@ -8,7 +8,7 @@ Brainfuck a Turing complete language, more information about brainfuck can be fi
 
 ### Prerequisites
 
-Just GCC compiler is required to build
+A C compiler and Make
 
 ### Installing
 
@@ -17,16 +17,7 @@ Just GCC compiler is required to build
  `make bd` 
  3. Execute with `./bd <filename>`
 
-## Example
-/test.b
-````
-++++++++++[>+++++++>++++++++++>+++>++++<
-<<<-]>++.>+.+++++++..+++.>>++++.<++.<+++
-+++++.--------.+++.------.--------.>+.
-````
-./bd test.b
-
-
+### Usage
 ![](https://github.com/seapvnk/brainduck/blob/master/assets/output.png?raw=true)
 
 ## Built With
