@@ -3,8 +3,7 @@
  *  Initial Version: Pedro Sérgio <www.psro@gmail.com> 
  * 
 */
-
-void bd_meminfo(unsigned char *memory, int rightmost_cell, int pointer);
+void bd_meminfo(unsigned char *memory, int rmc, int pointer);
 void bd_execute(char *program, bool debug);
 
 void bd_execute(char *program, bool debug)
@@ -14,10 +13,10 @@ void bd_execute(char *program, bool debug)
 	bdl_init(&loops);
   
   // memory
-	unsigned char * memory = malloc(sizeof (char));
+	unsigned char * memory = malloc(sizeof(char) * 2);
   *memory = 0;
 	unsigned int pointer = 0;
-  int rightmost_cell  = 0;
+  int rmc  = 0;
 
 	for (int i = 0; i < strlen(program); i++) {
 		switch (program[i]) {
@@ -27,10 +26,10 @@ void bd_execute(char *program, bool debug)
       
       // memory operations
 			case '>': {
-        if (pointer+1 > rightmost_cell) {
-          memory = realloc(memory, pointer+1);
-          rightmost_cell++;
-          memory[rightmost_cell] = 0;
+        if (pointer+1 > rmc) {
+          memory = realloc(memory, pointer + 2);
+          rmc++;
+          memory[rmc] = 0;
         }
         pointer++;
         break; 
@@ -57,29 +56,21 @@ void bd_execute(char *program, bool debug)
   
   // debug memory usage at final of program
   if (debug) { 
-    bd_meminfo(memory, rightmost_cell, pointer);
+    bd_meminfo(memory, rmc, pointer);
   }
 
   free(memory);
 
 }
 
-
-void bd_meminfo(unsigned char *memory, int rightmost_cell, int pointer)
+void bd_meminfo(unsigned char *memory, int rmc, int pointer)
 {
    putchar('\n');
    puts(BD_LOGO);
    puts("Address  Value  Pointer");
-   for (int i = 0; i <= rightmost_cell; i++) {
+   for (int i = 0; i <= rmc; i++) {
      bool is_pointer = (i == pointer);
      printf("%7d  %5d  %s\n", i, memory[i], is_pointer? "  <-" : " ");
    }
 }
-
-
-
-
-
-
-
 
