@@ -4,7 +4,7 @@ A Brainf:duck:ck interpreter.
 
 ## Getting Started
 
-Brainfuck a Turing complete language, more information about brainfuck can be find [here](https://esolangs.org/wiki/Brainfuck)
+Brainfuck is a Turing complete language, more information about brainfuck can be find [here](https://esolangs.org/wiki/Brainfuck)
 
 ### Prerequisites
 
